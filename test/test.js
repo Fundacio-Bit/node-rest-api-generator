@@ -2,7 +2,6 @@ const should = require('chai').should()
 const validateSchema = require('../_validator')
 const types = require('../_types')
 
-
 const _Schema_Project = [
   {fieldName: 'acronym', type: types._String, isMandatory: true},
   {fieldName: 'name', type: types._String, isMandatory: true}
