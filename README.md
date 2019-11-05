@@ -45,4 +45,4 @@ Once the server is running, you can access the REST API endpoints on http://<ser
 If you set the property *enable_auth: true* in the *props.js* file, then first you have to authenticate to the REST
 through the login endpoint http://<server_ip>:<server_port>/login to get an access token. The token should be
 sent to the REST either through an authentication header as a bearer token, or as a query parameter
-in HTTP GET requests as follows: http://...?token=<token>.
+in HTTP GET requests as follows: http://...?token=<jwt_token>.
