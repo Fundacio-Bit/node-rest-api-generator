@@ -23,7 +23,7 @@ npm install
   mongodb_colname: 'employees',
 
   // Authentication properties
-  // Note: use the script utils/generate_hashed_pwd.js to generate a hash from a password
+  // Note: use the script 'utils/generate_hashed_pwd.js' from the command line to generate a hash from a password to set the 'hashed_pwd' property
   adminuser: {
     username: '',
     hashed_pwd: ''
