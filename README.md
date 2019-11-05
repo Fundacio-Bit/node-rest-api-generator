@@ -10,7 +10,7 @@ npm install
 
 ## Configuration
 
-### 1. Set the properties on *config/props.js*
+### 1. Set the properties in *config/props.js*
 ~~~
 {
   // API REST server properties
@@ -35,7 +35,7 @@ npm install
 }
 ~~~
 
-### 2. Define a data schema for the MongoDB collection on *config/schema.js*
+### 2. Define a data schema for the MongoDB collection in *config/schema.js*
 ~~~
 const types = require('../_types')
 
@@ -100,7 +100,7 @@ let body = {
 npm start
 ~~~
 
-Once the server is running, you can access the REST API endpoints on *http://<server_ip>:<server_port>/endpoint_base_path*.
+Once the server is running, you can access the REST API endpoints at *http://<server_ip>:<server_port>/endpoint_base_path*.
 If you set the property *enable_auth: true* in the *props.js* file, then first you have to authenticate to the REST
 through the login endpoint *http://<server_ip>:<server_port>/login* in order to get an access token (JWT). The token should be
 sent to the REST either through an authentication header as a bearer token, or as a query parameter
