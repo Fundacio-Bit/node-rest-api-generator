@@ -77,9 +77,9 @@ const create_router = (props, mongo_col, schema) => {
       query['_id'] = new ObjectID(req.params.id)
     }
 
-    mongo_col.find(query).limit(0).toArray((err, items) => {
+    mongo_col.find(query).limit(0).sort({_id: -1}).toArray((err, items) => {
       if (!err) {
-        return res.json(items)
+        return res.json({ ok: 'OK', items: items })
       }
       else {
         return res.json({ error: err })
@@ -107,13 +107,13 @@ const create_router = (props, mongo_col, schema) => {
 
     // Unique fields can not be modified
     // ----------------------------------
-    let error_unique = {}
-    unique_fields.forEach(unique_field => {
-      if (isInArray(Object.keys(req.body), unique_field)) {
-        error_unique = { error: `Error: El campo '${unique_field}' no puede ser modificado por ser de tipo unique.` }
-      }
-    })
-    if (error_unique.error) return res.json(error_unique)
+    // let error_unique = {}
+    // unique_fields.forEach(unique_field => {
+    //   if (isInArray(Object.keys(req.body), unique_field)) {
+    //     error_unique = { error: `Error: El campo '${unique_field}' no puede ser modificado por ser de tipo unique.` }
+    //   }
+    // })
+    // if (error_unique.error) return res.json(error_unique)
 
     // Validate Schema (but not mandatory fields)
     // -------------------------------------------
