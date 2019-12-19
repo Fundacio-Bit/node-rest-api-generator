@@ -9,9 +9,9 @@ const authenticate = (req, res, next) => {
   // ----------------------------------------------
   if (!props.enable_auth) return next()
 
-  // Skip authentication for the login endpoint
-  // -------------------------------------------
-  if (/^\/login/.test(req.path)) return next()
+  // Routes not included in the endpoint_base_path will skip the auth
+  // -----------------------------------------------------------------
+  if (req.path.indexOf(props.endpoint_base_path) === -1) { return next() }
 
   let token = req.query.token || req.headers['authorization'] || ''
 
