@@ -12,9 +12,10 @@ module.exports = {
 
   // Authentication properties
   //---------------------------
+  // Note: use the script utils/generate_hashed_pwd.js to generate a hashed password
   adminuser: {
     username: '',
-    hashed_pwd: ''  // Note: use the script utils/generate_hashed_pwd.js to generate a hash from a password
+    hashed_pwd: ''
   },
   enable_auth: false,
 
