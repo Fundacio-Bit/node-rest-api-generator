@@ -6,23 +6,9 @@ const validateSchema = require('./_validator')
 
 const isInArray = (array, value) => array.indexOf(value) !== -1
 
-const create_router = (props, mongo_col, schema) => {
+const create_router = (mongo_col, schema) => {
 
   const router = express.Router()
-
-  // ------------------------------
-  // List endpoints of this router
-  // ------------------------------
-  const url_base = `http://${props.server_ip}:${props.server_port}/${props.endpoint_base_path}`
-  const endpoints = [
-    { path: `${url_base}/`, method: 'POST' },
-    { path: `${url_base}/id/:id`, method: 'GET' },
-    { path: `${url_base}/id/:id`, method: 'PUT' },
-    { path: `${url_base}/id/:id`, method: 'DELETE' }
-  ]
-  router.get('/', (req, res) => {
-    res.json({ endpoints: endpoints })
-  })
 
   // ------------------------------------------------------
   // Create unique indexes for unique fields of the schema
@@ -38,6 +24,47 @@ const create_router = (props, mongo_col, schema) => {
   const index_fields = schema.filter(x => x.index && !x.isUnique).map(x => x.fieldName)
   index_fields.forEach(fieldName => {
     mongo_col.createIndex({ [fieldName]: 1 })
+  })
+
+  // ---------
+  // Read all
+  // ---------
+  router.get('/', (req, res) => {
+
+    mongo_col.find({}).limit(0).sort({_id: -1}).toArray((err, items) => {
+      if (!err) {
+        return res.json({ ok: 'OK', items: items })
+      }
+      else {
+        return res.json({ error: err })
+      }
+    })
+
+  })
+
+  // -----------
+  // Read by ID
+  // -----------
+  router.get('/id/:id', (req, res) => {
+
+    const query = {}
+
+    if (req.params.id !== '--all--') {
+      if (!/^[0-9A-Fa-f]{24}$/.test(req.params.id)) {
+        return res.json({ error: 'Error: Campo \'id\' debe ser un string de 24 caracteres hexadecimales.' })
+      }
+      query['_id'] = new ObjectID(req.params.id)
+    }
+
+    mongo_col.find(query).limit(0).sort({_id: -1}).toArray((err, items) => {
+      if (!err) {
+        return res.json({ ok: 'OK', items: items })
+      }
+      else {
+        return res.json({ error: err })
+      }
+    })
+
   })
 
   // -------
@@ -63,31 +90,6 @@ const create_router = (props, mongo_col, schema) => {
 
   })
 
-  // -----
-  // Read
-  // -----
-  router.get('/id/:id', (req, res) => {
-
-    const query = {}
-
-    if (req.params.id !== '--all--') {
-      if (!/^[0-9A-Fa-f]{24}$/.test(req.params.id)) {
-        return res.json({ error: 'Error: Campo \'id\' debe ser un string de 24 caracteres hexadecimales.' })
-      }
-      query['_id'] = new ObjectID(req.params.id)
-    }
-
-    mongo_col.find(query).limit(0).sort({_id: -1}).toArray((err, items) => {
-      if (!err) {
-        return res.json({ ok: 'OK', items: items })
-      }
-      else {
-        return res.json({ error: err })
-      }
-    })
-
-  })
-
   // -------
   // Update
   // -------
@@ -104,16 +106,6 @@ const create_router = (props, mongo_col, schema) => {
     if (Object.keys(req.body).length === 0) {
       return res.json({ error: 'Error: Debe especificar al menos un campo a modificar.' })
     }
-
-    // Unique fields can not be modified
-    // ----------------------------------
-    // let error_unique = {}
-    // unique_fields.forEach(unique_field => {
-    //   if (isInArray(Object.keys(req.body), unique_field)) {
-    //     error_unique = { error: `Error: El campo '${unique_field}' no puede ser modificado por ser de tipo unique.` }
-    //   }
-    // })
-    // if (error_unique.error) return res.json(error_unique)
 
     // Validate Schema (but not mandatory fields)
     // -------------------------------------------
