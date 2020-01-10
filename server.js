@@ -49,7 +49,8 @@ resources = resources.map(res => {
         { path: `${url_base}/${res}`, method: 'POST' },
         { path: `${url_base}/${res}/id/:id`, method: 'PUT' },
         { path: `${url_base}/${res}/id/:id`, method: 'DELETE' }
-      ]
+      ],
+      schema: schema
     }
   }
 })

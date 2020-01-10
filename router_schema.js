@@ -4,8 +4,6 @@ const express = require('express')
 const ObjectID = require('mongodb').ObjectID
 const validateSchema = require('./_validator')
 
-const isInArray = (array, value) => array.indexOf(value) !== -1
-
 const create_router = (mongo_col, schema) => {
 
   const router = express.Router()
