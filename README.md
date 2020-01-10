@@ -100,23 +100,30 @@ let body = {
 npm start
 ~~~
 
-Once the server is running, you can access the REST API endpoints at *http://<server_ip>:<server_port>/endpoint_base_path*.
-If you set the property *enable_auth: true* in the *props.js* file, then first you have to authenticate to the REST
-through the login endpoint *http://<server_ip>:<server_port>/login* in order to get an access token (JWT). The token should be
-sent to the REST either through an authentication header as a bearer token, or as a query parameter
-in HTTP GET requests as follow: *http://...?token=<jwt_token>*. Taking the properties and schema set in
-the previous section, this would be the available list of endpoints:
+Once the server is running, you can see the list of available endpoints at *http://<server_ip>:<server_port>* (in development mode).
+
+Setting the property *enable_auth: true* in the *props.js* file, it is enabled the auth process to the REST.
+To authenticate and get an access token (JWT) use the login endpoint *http://<server_ip>:<server_port>/login*.
+The token obtained should be sent in the endpoint requests either as a bearer token (auth header), or as a query string parameter
+in the endpoint URL ( *http://...?token=<jwt_token>* ).
+
+Taking the properties and schema set in
+the previous section, this is the list of available endpoints:
 
 ~~~
 {
   endpoints: [
     {
-      path: "http://127.0.0.1:5000/employees/",
-      method: "POST"
+      path: "http://127.0.0.1:5000/employees",
+      method: "GET"
     },
     {
       path: "http://127.0.0.1:5000/employees/id/:id",
       method: "GET"
+    },
+    {
+      path: "http://127.0.0.1:5000/employees",
+      method: "POST"
     },
     {
       path: "http://127.0.0.1:5000/employees/id/:id",
