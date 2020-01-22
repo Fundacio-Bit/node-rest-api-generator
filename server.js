@@ -69,17 +69,13 @@ const createApp = (mongo_cols) => {
     })
   }
 
-  // -------------
-  // Router Login
-  // -------------
-  if (authProps.enable_auth) app.use('/login', router_login(authProps))
-
-  // -----------------
-  // Middleware: Auth
-  // -----------------
-  app.use((req, res, next) => {
-    auth(req, res, next)
-  })
+  // ---------------------------------
+  // Router Login and Middleware Auth
+  // ---------------------------------
+  if (authProps.enable_auth) {
+    app.use('/login', router_login(authProps))
+    app.use((req, res, next) => { auth(req, res, next) })
+  }
 
   // ------------------
   // Routers Resources
