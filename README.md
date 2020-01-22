@@ -8,6 +8,8 @@ A generator of RESTful API's with schema validation.
 npm install
 ~~~
 
+## <Deprecated> ##
+
 ## Configuration
 
 ### 1. Set the properties in *config/props.js*

@@ -1,109 +1,109 @@
+// ---------------------------------------------------------------
+// Pending Tasks:
+// Validate props with internal schemas ...
+// Create mongo indexes (general and unique) ...
+// Finish router login: validate schema, verify via getUsers ...
+// Generate endpoints to expose JSON schemas in root doc ...
+// Add PUT method in router resource ...
+// ---------------------------------------------------------------
 'use strict'
 
 const express = require('express')
-const MongoClient = require('mongodb').MongoClient
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const requestIp = require('request-ip')
 const path = require('path')
 
-const props = require('./config/props')
-const schema = require('./config/schema')
-const authenticate = require('./_auth')
-const router_login = require('./router_login')
-const router_schema = require('./router_schema')
+const resourcesProps = require('./config/resources_props')
+const serverProps = require('./config/server_props')
+const authProps = require('./config/auth_props')
+const openMongoCollection = require('./utils/mongo_utils').openMongoCollection
+const generateRestApiDoc = require('./utils/generate_rest_api_doc')
+const auth = require('./middlewares/authentication/auth')
+const router_login = require('./routers_endpoints/router_login')
+const router_resource = require('./routers_endpoints/router_resource')
 
-const app = express()
+// -------------------------------
+// Opening connections to MongoDB
+// -------------------------------
+let promises = resourcesProps.map(res => openMongoCollection(res.resource, res.mongodb_uri, res.mongodb_database, res.mongodb_collection))
 
-app.use( bodyParser.json({ limit: '50mb' }) )
-app.use( requestIp.mw() )
-app.use( cors() )
-
-// Authentication
-// ---------------
-app.use((req, res, next) => {
-  authenticate(req, res, next)
+Promise.all(promises)
+.then(mongo_cols => {
+  console.log('\n- MongoDB connections:')
+  mongo_cols.forEach(col => {
+    console.log(`  ... opened collection: '${col.col_name}' (${col.mongodb_uri}/${col.db_name}) (resource: ${col.resource})`)
+  })
+  createApp(mongo_cols)
+})
+.catch((error) => {
+  console.log({ error: error.message })
+  process.exit()
 })
 
-// Generate list of resources and endpoints
-// -----------------------------------------
-const url_base = `http://${props.server_ip}:${props.server_port}`
+// -------------------
+// Create express App
+// -------------------
+const createApp = (mongo_cols) => {
 
-let resources = [ props.endpoint_base_path ]
-if (props.enable_auth) resources.push('login')
+  const app = express()
 
-resources = resources.map(res => {
-  if (res === 'login') {
-    return {
-      resource: res,
-      endpoints: [
-        { path: `${url_base}/login`, method: 'POST' },
-      ]
-    }
-  } else {
-    return {
-      resource: res,
-      endpoints: [
-        { path: `${url_base}/${res}`, method: 'GET' },
-        { path: `${url_base}/${res}/id/:id`, method: 'GET' },
-        { path: `${url_base}/${res}`, method: 'POST' },
-        { path: `${url_base}/${res}/id/:id`, method: 'PUT' },
-        { path: `${url_base}/${res}/id/:id`, method: 'DELETE' }
-      ],
-      schema: schema
-    }
-  }
-})
+  app.use( bodyParser.json({ limit: '50mb' }) )
+  app.use( cors() )
 
-// Define root endpoint for DEVELOPMENT or PRODUCTION
-// ---------------------------------------------------
-if (!process.env.DEVELOPMENT_LOCAL_ENV) {  // PRODUCTION
-  // Serving the React App from 'build' folder
-  app.use(express.static(path.join(__dirname, 'build')))
-  app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'))
-  })
-} else {  // DEVELOPMENT
-  app.get('/', (req, res) => {
-    res.json({ resources: resources })
-  })
-}
+  const url_base = `http://${serverProps.server_ip}:${serverProps.server_port}`
 
-// Instantiate router login
-// -------------------------
-if (props.enable_auth) app.use('/login', router_login(props))
-
-// Open MongoDB connection, instantiate router schema, and run server
-// -------------------------------------------------------------------
-MongoClient.connect(props.mongodb_uri, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
-  if (!err) {
-    console.log(`\nConnected to ${props.mongodb_uri} ...\n`)
-
-    const db = client.db(props.mongodb_database)
-    console.log(`  ... opened database: ${props.mongodb_database}\n`)
-
-    db.collection(props.mongodb_colname, (err, collection) => {
-      if (!err) {
-        console.log(`  ... opened collection: ${props.mongodb_colname}`)
-
-        // instantiate router
-        app.use(`/${props.endpoint_base_path}`, router_schema(collection, schema))
-
-        // run server
-        app.listen(props.server_port, () => {
-          console.log(`\nYour server running on ${url_base}\n`)
-          if (props.enable_auth) console.log(`Login endpoint to get an access token: ${url_base}/login\n`)
-        })
-      }
-      else {
-        console.log(err)
-        process.exit()
-      }
+  // --------------
+  // Root endpoint
+  // --------------
+  if (!process.env.DEVELOPMENT_LOCAL_ENV) {  // PRODUCTION (serving React App)
+    app.use(express.static(path.join(__dirname, 'build')))
+    app.get('/', (req, res) => {
+      res.sendFile(path.join(__dirname, 'build', 'index.html'))
     })
+  } else {  // DEVELOPMENT (serving REST API documentation)
+    let resources = mongo_cols.map(col => col.resource)
+    if (authProps.enable_auth) resources.push('login')
+    resources = generateRestApiDoc(url_base, resources)
+    app.get('/', (req, res) => {
+      res.json({ resources: resources })
+    })
+  }
 
-  }
-  else {
-    console.log(err)
-    process.exit()
-  }
-})
+  // ------------
+  // Middlewares
+  // ------------
+
+  // Auth
+  // -----
+  app.use((req, res, next) => {
+    auth(req, res, next)
+  })
+
+  // --------
+  // Routers
+  // --------
+
+  // Router Login
+  // -------------
+  if (authProps.enable_auth) app.use('/login', router_login(authProps))
+
+  // Routers Resources
+  // ------------------
+  mongo_cols.forEach(res => {
+    app.use(`/${res.resource}`, router_resource(res.collection, {}))
+  })
+
+  // -----------------
+  // Launching server
+  // -----------------
+  app.listen(serverProps.server_port, () => {
+    if (process.env.DEVELOPMENT_LOCAL_ENV) {
+      console.log(`\n- REST API documentation: ${url_base}/`)
+    } else {
+      console.log(`\n- React App: ${url_base}/`)
+    }
+    if (authProps.enable_auth) console.log(`\n- Login endpoint to get auth token: ${url_base}/login`)
+    console.log(`\nServer running ...`)
+  })
+
+}
