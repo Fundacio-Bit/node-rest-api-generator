@@ -1,3 +1,5 @@
+'use strict'
+
 const generateRestApiDoc = (urlBase, resources) => {
 
   return resources.map(res => {
