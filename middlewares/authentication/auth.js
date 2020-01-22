@@ -8,9 +8,6 @@ const auth = (req, res, next) => {
   // Skip auth if enable_auth = false
   if (!authProps.enable_auth) return next()
 
-  // Skip auth of login endpoint
-  if (/^\/login\/?$/.test(req.path)) return next()
-
   let token = req.query.token || req.headers['authorization'] || ''
 
   if (token.startsWith('Bearer ')) {
@@ -22,6 +19,7 @@ const auth = (req, res, next) => {
   }
 
   if (token) {
+
     jwt.verify(token, authProps.secret_key, (err, decoded) => {
       if (err) {
         return res.json({ error: 'INVALID_TOKEN' })
@@ -31,8 +29,8 @@ const auth = (req, res, next) => {
         return next()
       }
     })
-  }
-  else {
+
+  } else {
     return res.json({ error: 'TOKEN_REQUIRED' })
   }
 

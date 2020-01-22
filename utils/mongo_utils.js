@@ -4,7 +4,7 @@ const MongoClient = require('mongodb').MongoClient
 
 const openMongoCollection = (resource, mongodb_uri, db_name, col_name) => {
   return new Promise((resolve, reject) => {
-    MongoClient.connect(mongodb_uri, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
+    MongoClient.connect(mongodb_uri, { useNewUrlParser: true, useUnifiedTopology: true, poolSize: 25 }, (err, client) => {
       if (!err) {
         const db = client.db(db_name)
         db.collection(col_name, (err, collection) => {
