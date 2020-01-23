@@ -81,7 +81,7 @@ const createApp = (mongo_cols) => {
   // Routers Resources
   // ------------------
   mongo_cols.forEach(res => {
-    app.use(`/${res.resource}`, router_resource(res.collection, {}))
+    app.use(`/${res.resource}`, router_resource(res.collection))
   })
 
   // -----------------

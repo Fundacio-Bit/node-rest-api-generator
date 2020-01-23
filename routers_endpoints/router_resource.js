@@ -3,25 +3,9 @@
 const express = require('express')
 const ObjectID = require('mongodb').ObjectID
 
-const create_router = (mongo_col, schema) => {
+const create_router = (mongo_col) => {
 
   const router = express.Router()
-
-  // // ------------------------------------------------------
-  // // Create unique indexes for unique fields of the schema
-  // // ------------------------------------------------------
-  // const unique_fields = schema.filter(x => x.isUnique).map(x => x.fieldName)
-  // unique_fields.forEach(fieldName => {
-  //   mongo_col.createIndex({ [fieldName]: 1 }, { sparse: true, unique: true })
-  // })
-
-  // // ------------------------------------------------
-  // // Create indexes for indexed fields of the schema
-  // // ------------------------------------------------
-  // const index_fields = schema.filter(x => x.index && !x.isUnique).map(x => x.fieldName)
-  // index_fields.forEach(fieldName => {
-  //   mongo_col.createIndex({ [fieldName]: 1 })
-  // })
 
   // ---------
   // Read all
@@ -73,11 +57,6 @@ const create_router = (mongo_col, schema) => {
   // -------
   router.post('/', (req, res) => {
 
-    // Validate Schema
-    // ----------------
-
-    // Inserting ...
-    // --------------
     mongo_col.insertOne(req.body, (err, docInserted) => {
       if (!err) {
         return res.json({ ok: 'OK', id: req.body._id })
@@ -95,27 +74,18 @@ const create_router = (mongo_col, schema) => {
   router.patch('/_id/:_id', (req, res) => {
 
     // Check _id format
-    // -----------------
     if (!/^[0-9A-Fa-f]{24}$/.test(req.params._id)) {
       return res.json({ error: 'Error: Field \'_id\' must be a string of 24 hexadecimals characters.' })
     }
 
     // Check req.body empty
-    // ---------------------
     if (Object.keys(req.body).length === 0) {
       return res.json({ error: 'Error: Specify at least one field to update.' })
     }
 
-    // Validate Schema (without mandatory fields)
-    // -------------------------------------------
-
-    // Prepare update
-    // ---------------
     const query = { _id: new ObjectID(req.params._id) }
     const setContent = { $set: req.body }
 
-    // Updating ...
-    // -------------
     mongo_col.updateOne(query, setContent, (err, result) => {
       if (!err) {
         if (result.result.n === 1) {

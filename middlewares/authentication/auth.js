@@ -7,13 +7,8 @@ const auth = (req, res, next) => {
 
   let token = req.query.token || req.headers['authorization'] || ''
 
-  if (token.startsWith('Bearer ')) {
-    token = token.slice(7, token.length)
-  }
-
-  if (token === 'null') {
-    token = null
-  }
+  if (token.startsWith('Bearer ')) { token = token.slice(7, token.length) }
+  if (token === 'null') token = null
 
   if (token) {
 
