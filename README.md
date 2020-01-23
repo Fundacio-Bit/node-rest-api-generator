@@ -8,7 +8,7 @@ A generator of RESTful API's with schema validation.
 npm install
 ~~~
 
-## Deprecated ##
+## Deprecated! ##
 
 ## Configuration
 
