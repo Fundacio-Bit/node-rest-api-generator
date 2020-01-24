@@ -1,6 +1,5 @@
 // ---------------------------------------------------------------
 // Pending Tasks:
-// Validate props with internal schemas ...
 // Create mongo indexes (general and unique) ...
 // Finish router login: validate schema, verify via getUsers ...
 // Generate endpoints to expose JSON schemas in root doc ...
@@ -16,11 +15,22 @@ const path = require('path')
 const resourcesProps = require('./config/resources_props')
 const serverProps = require('./config/server_props')
 const authProps = require('./config/auth_props')
+const validatePropsWithInternalSchemas = require('./utils/internal-schemas-validator')
 const openMongoCollection = require('./utils/mongo_utils').openMongoCollection
 const generateRestApiDoc = require('./utils/generate_rest_api_doc')
 const auth = require('./middlewares/authentication/auth')
 const router_login = require('./routers_endpoints/router_login')
 const router_resource = require('./routers_endpoints/router_resource')
+
+// ---------------------------------------
+// Validating props with internal schemas
+// ---------------------------------------
+try {
+  validatePropsWithInternalSchemas(authProps, resourcesProps, serverProps)
+} catch(error) {
+  console.log(error.message)
+  process.exit()
+}
 
 // -------------------------------
 // Opening connections to MongoDB
