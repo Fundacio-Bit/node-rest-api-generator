@@ -16,7 +16,7 @@ const create_router = (mongo_col) => {
         return res.status(200).json({ ok: 'OK', items_count: items.length, items: items })
       }
       else {
-        return res.status(503).json({ error: err })
+        return res.status(504).json({ error: err })
       }
     })
   })
@@ -43,7 +43,7 @@ const create_router = (mongo_col) => {
         }
       }
       else {
-        return res.status(503).json({ error: err })
+        return res.status(504).json({ error: err })
       }
     })
   })
@@ -57,7 +57,7 @@ const create_router = (mongo_col) => {
         return res.status(200).json({ ok: 'OK', id: docInserted.insertedId })
       }
       else {
-        return res.status(503).json({ error: err })
+        return res.status(504).json({ error: err })
       }
     })
   })
@@ -90,7 +90,7 @@ const create_router = (mongo_col) => {
         }
       }
       else {
-        return res.status(503).json({ error: err })
+        return res.status(504).json({ error: err })
       }
     })
 
@@ -125,7 +125,7 @@ const create_router = (mongo_col) => {
           return res.status(500).json({ error: result })
         }
       } else {
-        return res.status(503).json({ error: err })
+        return res.status(504).json({ error: err })
       }
     })
 
@@ -151,7 +151,7 @@ const create_router = (mongo_col) => {
         }
       }
       else {
-        return res.status(503).json({ error: err })
+        return res.status(504).json({ error: err })
       }
     })
   })

@@ -1,6 +1,6 @@
 # node-rest-api-generator #
 
-A generator of RESTful API's with schema validation.
+A generator of RESTful API's based on JSON schema validation, MongoDB and JWT auth.
 
 ## Installation
 
