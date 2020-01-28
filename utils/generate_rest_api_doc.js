@@ -7,7 +7,7 @@ const generateRestApiDoc = (urlBase, resources) => {
       return {
         resource: res,
         endpoints: [
-          { path: `${urlBase}/login`, method: 'POST' },
+          { path: `${urlBase}/login`, methods: ['POST'] },
         ],
         schema: ''
       }
@@ -15,11 +15,8 @@ const generateRestApiDoc = (urlBase, resources) => {
       return {
         resource: res,
         endpoints: [
-          { path: `${urlBase}/${res}`, method: 'GET' },
-          { path: `${urlBase}/${res}/_id/:_id`, method: 'GET' },
-          { path: `${urlBase}/${res}`, method: 'POST' },
-          { path: `${urlBase}/${res}/_id/:_id`, method: 'PATCH' },
-          { path: `${urlBase}/${res}/_id/:_id`, method: 'DELETE' }
+          { path: `${urlBase}/${res}`, methods: ['GET', 'POST'] },
+          { path: `${urlBase}/${res}/:_id`, methods: ['GET', 'PUT', 'PATCH', 'DELETE'] }
         ],
         schema: ''
       }

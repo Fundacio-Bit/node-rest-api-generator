@@ -14,12 +14,13 @@ const validateConfigProps = (authProps, resourcesProps, serverProps) => {
   // Validating auth props
   // ----------------------
   const authPropsSchema = {
+    $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
-    required: ['enable_auth', 'secret_key', 'users_data_source'],
+    required: ['enable_auth', 'secret_key'],
     properties: {
       enable_auth: { type: 'boolean' },
       secret_key: { type: 'string' },
-      users_data_source: {
+      users_datasource: {
         type: 'object',
         required: ['mongodb_uri', 'mongodb_database', 'mongodb_collection'],
         properties: {
@@ -66,6 +67,7 @@ const validateConfigProps = (authProps, resourcesProps, serverProps) => {
   // Validating server props
   // ------------------------
   const serverPropsSchema = {
+    $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
     required: ['server_port', 'server_ip'],
     properties: {

@@ -3,7 +3,7 @@
 // Create mongo indexes (general and unique) ...
 // Finish router login: validate users schema, verify via getUsers ...
 // Generate endpoint to expose JSON schemas in root doc ...
-// Add PUT method in router resource ...
+// Middleware to validate resources schemas ...
 // -------------------------------------------------------------------------
 'use strict'
 
@@ -18,7 +18,7 @@ const authProps = require('./config/auth_props')
 const validateConfigProps = require('./utils/config-props-validator')
 const openMongoCollection = require('./utils/mongo_utils').openMongoCollection
 const generateRestApiDoc = require('./utils/generate_rest_api_doc')
-const auth = require('./middlewares/authentication/auth')
+const auth = require('./middleware/authentication/auth')
 const router_login = require('./routers_endpoints/router_login')
 const router_resource = require('./routers_endpoints/router_resource')
 
