@@ -54,7 +54,7 @@ const create_router = (mongo_col) => {
   router.post('/', (req, res) => {
     mongo_col.insertOne(req.body, (err, docInserted) => {
       if (!err) {
-        return res.status(200).json({ ok: 'OK', id: docInserted.insertedId })
+        return res.status(200).json({ ok: 'OK', created: { _id: docInserted.insertedId } })
       }
       else {
         return res.status(504).json({ error: err })
@@ -83,7 +83,7 @@ const create_router = (mongo_col) => {
     mongo_col.updateOne(query, setContent, (err, result) => {
       if (!err) {
         if (result.result.n === 1) {
-          return res.status(200).json({ ok: 'OK' })
+          return res.status(200).json({ ok: 'OK', updated: { _id: req.params._id } })
         }
         else {
           return res.status(404).json({ error: `Error: Item with _id = '${req.params._id}' doesn't exist.` })
@@ -117,9 +117,9 @@ const create_router = (mongo_col) => {
       if (!err) {
         if (result.result.ok) {
           if (result.upsertedId) {
-            return res.status(200).json({ ok: 'OK', upsertedId: result.upsertedId })
+            return res.status(200).json({ ok: 'OK', created: { _id: result.upsertedId._id } })
           } else {
-            return res.status(200).json({ ok: 'OK' })
+            return res.status(200).json({ ok: 'OK', replaced: { _id: req.params._id } })
           }
         } else {
           return res.status(500).json({ error: result })
@@ -135,6 +135,8 @@ const create_router = (mongo_col) => {
   // Delete
   // -------
   router.delete('/:_id', (req, res) => {
+
+    // Check _id format
     if (!/^[0-9A-Fa-f]{24}$/.test(req.params._id)) {
       return res.status(400).json({ error: 'Error: _id parameter must be a string of 24 hexadecimals characters.' })
     }
@@ -144,7 +146,7 @@ const create_router = (mongo_col) => {
     mongo_col.deleteOne(query, (err, result) => {
       if (!err) {
         if (result.result.n === 1) {
-          return res.status(200).json({ ok: 'OK' })
+          return res.status(200).json({ ok: 'OK', deleted: { _id: req.params._id } })
         }
         else {
           return res.status(404).json({ error: `Error: Item with _id = '${req.params._id}' doesn't exist.` })
