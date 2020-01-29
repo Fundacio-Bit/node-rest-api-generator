@@ -34,7 +34,7 @@ const validateConfigProps = (authProps, resourcesProps, serverProps) => {
     additionalProperties: false
   }
 
-  // If auth is enable, then users_datasource is required
+  // If auth is enabled, then users_datasource is a required field
   if (authProps.enable_auth) {
     authPropsSchema.required.push('users_datasource')
   }
