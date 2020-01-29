@@ -34,6 +34,11 @@ const validateConfigProps = (authProps, resourcesProps, serverProps) => {
     additionalProperties: false
   }
 
+  // If auth is enable, then users_datasource is required
+  if (authProps.enable_auth) {
+    authPropsSchema.required.push('users_datasource')
+  }
+
   let validate = ajv.compile(authPropsSchema)
   if (!validate(authProps)) throw new Error(getErrorMessage('config/authProps', validate.errors))
 
