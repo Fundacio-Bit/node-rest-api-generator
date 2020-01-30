@@ -4,12 +4,15 @@ let jwt = require('jsonwebtoken')
 const express = require('express')
 const keccak256 = require('js-sha3').keccak256
 
-const create_router = (authProps) => {
+const create_router = (authProps, loginSchema) => {
 
   const router = express.Router()
 
   router.get('/', (req, res) => {
-    res.json({ note: `To log on the REST API and get an access token, send a POST request to this endpoint with the following body: {"username": "...", "pwd": "..."}` })
+    res.json({
+      hint: 'To log on, send a POST request with a body that follows the indicated schema.',
+      schema: loginSchema
+    })
   })
 
   router.post('/', (req, res) => {

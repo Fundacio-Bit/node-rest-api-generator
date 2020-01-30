@@ -9,7 +9,7 @@ const generateRestApiDoc = (urlBase, resources) => {
         endpoints: [
           { path: `${urlBase}/login`, methods: ['POST'] },
         ],
-        schema: ''
+        jsonSchema: `${urlBase}/schemas/login`
       }
     } else {
       return {
@@ -18,7 +18,7 @@ const generateRestApiDoc = (urlBase, resources) => {
           { path: `${urlBase}/${res}`, methods: ['GET', 'POST'] },
           { path: `${urlBase}/${res}/:_id`, methods: ['GET', 'PUT', 'PATCH', 'DELETE'] }
         ],
-        schema: ''
+        jsonSchema: `${urlBase}/schemas/${res}`
       }
     }
   })
