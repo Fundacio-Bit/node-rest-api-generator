@@ -13,7 +13,7 @@ const create_router = (mongo_col) => {
   router.get('/', (req, res) => {
     mongo_col.find({}).limit(0).sort({_id: -1}).toArray((err, items) => {
       if (!err) {
-        return res.status(200).json({ ok: 'OK', items_count: items.length, items: items })
+        return res.status(200).json(items)
       }
       else {
         return res.status(500).json({ error: err })
@@ -37,7 +37,7 @@ const create_router = (mongo_col) => {
     mongo_col.findOne(query, (err, item) => {
       if (!err) {
         if (item) {
-          return res.status(200).json({ ok: 'OK', item: item })
+          return res.status(200).json(item)
         } else {
           return res.status(404).json({ error: `Error: Item with _id = '${req.params._id}' doesn't exist.` })
         }

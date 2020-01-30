@@ -82,6 +82,7 @@ const createApp = (mongo_cols) => {
 
     resourcesProps.forEach(resource => {
       try {
+        if (resource.resource === 'login') throw Error(`The resource name 'login' is reserved and can't be used in resource_props.`)
         const content = fs.readFileSync(path.join(__dirname, 'config', 'resources-schemas', resource.schema), 'utf8')
         resource.parsedSchema = JSON.parse(content)
         let validate = ajv.compile(resource.parsedSchema)
