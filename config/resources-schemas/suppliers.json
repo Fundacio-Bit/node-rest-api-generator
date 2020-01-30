@@ -1,8 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": ["name", "location_info", "contact_info"],
+  "required": ["supplier_id", "name", "location_info", "contact_info"],
   "properties": {
+    "supplier_id": { "type": "string" },
     "name": { "type": "string" },
     "location_info": {
       "type": "object",
@@ -19,7 +20,7 @@
       "type": "object",
       "required": ["email", "phone_number", "website"],
       "properties": {
-        "email": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
         "phone_number": { "type": "string" },
         "website": { "type": "string" }
       },

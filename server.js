@@ -81,8 +81,8 @@ const createApp = (mongo_cols) => {
     const ajv = new Ajv({ allErrors: true })
 
     resourcesProps.forEach(resource => {
-      const content = fs.readFileSync(path.join(__dirname, 'config', 'resources-schemas', resource.schema), 'utf8')
       try {
+        const content = fs.readFileSync(path.join(__dirname, 'config', 'resources-schemas', resource.schema), 'utf8')
         resource.parsedSchema = JSON.parse(content)
         let validate = ajv.compile(resource.parsedSchema)
         resource.validate = validate

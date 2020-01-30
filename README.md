@@ -8,3 +8,8 @@ A generator of RESTful API's based on JSON schema validation, MongoDB and JWT au
 npm install
 ~~~
 
+## Usage
+
+~~~
+npm start
+~~~
