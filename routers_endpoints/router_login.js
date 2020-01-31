@@ -14,7 +14,7 @@ const create_router = (authProps, loginSchema) => {
   const router = express.Router()
 
   router.get('/', (req, res) => {
-    res.json({
+    res.status(200).json({
       hint: 'To log on, send a POST request with the following schema.',
       schema: loginSchema
     })
@@ -40,7 +40,7 @@ const create_router = (authProps, loginSchema) => {
 
       if (users.length === 0) {
 
-        return res.status(404).json({ error: 'UNKNOWN_USER' })
+        return res.status(401).json({ error: 'UNKNOWN_USER' })
 
       } else {
         let currentUser = users[0]
@@ -54,7 +54,7 @@ const create_router = (authProps, loginSchema) => {
         // Verify password
         // ----------------
         if (currentUser.hashed_pwd !== keccak256(req.body.pwd)) {
-          return res.status(404).json({ error: 'INVALID_PASSWORD' })
+          return res.status(401).json({ error: 'INVALID_PASSWORD' })
         } else {
 
           // OK: user verified!
@@ -76,7 +76,7 @@ const create_router = (authProps, loginSchema) => {
 
       let token = jwt.sign(payload, authProps.secret_key, { expiresIn: '24h' })
 
-      return res.json({ ok: 'OK', expires: 'Your token expires in 24h', token: token })
+      return res.status(200).json({ ok: 'OK', expires: 'Your token expires in 24h', token: token })
     }
 
   })
