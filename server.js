@@ -10,21 +10,26 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const path = require('path')
-const fs = require('fs')
-const Ajv = require('ajv')
 
+// Config properties
 const resourcesProps = require('./config/resources_props')
 const serverProps = require('./config/server_props')
 const authProps = require('./config/auth_props')
-const validateConfigProps = require('./utils/config-props-validator')
+
+// Utils
+const validateConfigProps = require('./utils/config_props_validator')
+const compileResourcesSchemas = require('./utils/resources_schemas_compiler')
 const openMongoCollection = require('./utils/mongo_utils').openMongoCollection
-const generateRestApiDoc = require('./utils/generate_rest_api_doc')
+const loginSchema = require('./utils/login_schema')
+
+// Middlewares
 const auth = require('./middleware/authentication/auth')
+
+// Routers
 const router_login = require('./routers_endpoints/router_login')
 const router_resource = require('./routers_endpoints/router_resource')
-const router_schemas_doc = require('./routers_endpoints/router_schemas_doc')
-const loginSchema = require('./utils/login_schema')
+const router_rest_api_doc = require('./routers_endpoints/router_rest_api_doc')
+const router_react_app = require('./routers_endpoints/router_react_app')
 
 // ----------------------------------------------
 // Validating config props with internal schemas
@@ -36,6 +41,16 @@ try {
   process.exit()
 }
 
+// ----------------------------
+// Compiling resources schemas
+// ----------------------------
+try {
+  compileResourcesSchemas(__dirname, resourcesProps)
+} catch(error) {
+  console.log('ERROR:', error.message)
+  process.exit()
+}
+
 // -------------------------------
 // Opening connections to MongoDB
 // -------------------------------
@@ -44,9 +59,12 @@ let promises = resourcesProps.map(resource => openMongoCollection(resource.resou
 Promise.all(promises)
 .then(mongo_cols => {
   console.log('\n- MongoDB connections:')
+
   mongo_cols.forEach(col => {
-    console.log(`  ... opened collection: '${col.col_name}' (${col.mongodb_uri}/${col.db_name}) (resource: ${col.resource})`)
+    let resourceSchema = resourcesProps.filter(x => x.resource === col.resource)[0].schema
+    console.log(`  ... opened: '${col.col_name}' (${col.mongodb_uri}/${col.db_name}) (resource: ${col.resource}) (schema: ${resourceSchema})`)
   })
+
   createApp(mongo_cols)
 })
 .catch(error => {
@@ -69,78 +87,33 @@ const createApp = (mongo_cols) => {
   // --------------
   // Root endpoint
   // --------------
-  if (!process.env.DEVELOPMENT_LOCAL_ENV) {  // PRODUCTION (serving React App)
-    app.use(express.static(path.join(__dirname, 'build')))
-    app.get('/', (req, res) => {
-      res.sendFile(path.join(__dirname, 'build', 'index.html'))
-    })
-  } else {  // DEVELOPMENT (serving REST API documentation)
-
-    // Reading and compiling JSON schema files
-    // ----------------------------------------
-    const ajv = new Ajv({ allErrors: true })
-
-    resourcesProps.forEach(resource => {
-      try {
-        if (resource.resource === 'login') throw Error(`The resource name 'login' is reserved and can't be used in resource_props.`)
-        const content = fs.readFileSync(path.join(__dirname, 'config', 'resources-schemas', resource.schema), 'utf8')
-        resource.parsedSchema = JSON.parse(content)
-        let validate = ajv.compile(resource.parsedSchema)
-        resource.validate = validate
-      } catch(error) {
-        console.log(`\nERROR detected compiling JSON schema '${resource.schema}':\n`, error.message, '\n')
-        process.exit()
-      }
-    })
-
-    // Instantiating the router to document schemas
-    // ---------------------------------------------
-    app.use('/schemas', router_schemas_doc(resourcesProps))
-
-    if (authProps.enable_auth) {
-      app.get(`/schemas/login`, (req, res) => {
-        res.status(200).json(loginSchema)
-      })
-    }
-
-    // Generating documentation of endpoints
-    // --------------------------------------
-    let resources = resourcesProps.map(resource => resource.resource)
-    if (authProps.enable_auth) resources.push('login')
-
-    resources = generateRestApiDoc(url_base, resources)
-
-    app.get('/', (req, res) => {
-      res.json({ resources: resources })
-    })
+  if (serverProps.isProduction) {
+    app.use('/', router_react_app(__dirname))
+    console.log(`\n- React App: ${url_base}/`)
+  } else {
+    app.use('/', router_rest_api_doc(url_base, resourcesProps, authProps, loginSchema))
+    console.log(`\n- REST API documentation: ${url_base}/`)
   }
 
-  // ---------------------------------
-  // Router Login and Middleware Auth
-  // ---------------------------------
+  // ------------------------------------------------------
+  // Login: instantiate router first, then middleware auth
+  // ------------------------------------------------------
   if (authProps.enable_auth) {
     app.use('/login', router_login(authProps, loginSchema))
     app.use((req, res, next) => { auth(req, res, next) })
+    console.log(`\n- Login endpoint to get auth token: ${url_base}/login`)
   }
 
-  // ------------------
-  // Routers Resources
-  // ------------------
+  // ------------------------------------------------------------------------------
+  // Resources: middleware to validate JSON schemas first, then instantiate router
+  // ------------------------------------------------------------------------------
   mongo_cols.forEach(resource => {
+    // app.use((req, res, next) => { validateResources(req, res, next) })
     app.use(`/${resource.resource}`, router_resource(resource.collection))
   })
 
   // -----------------
   // Launching server
   // -----------------
-  app.listen(serverProps.server_port, () => {
-    if (process.env.DEVELOPMENT_LOCAL_ENV) {
-      console.log(`\n- REST API documentation: ${url_base}/`)
-    } else {
-      console.log(`\n- React App: ${url_base}/`)
-    }
-    if (authProps.enable_auth) console.log(`\n- Login endpoint to get auth token: ${url_base}/login`)
-    console.log(`\nServer running ...`)
-  })
-
+  app.listen(serverProps.server_port, () => { console.log(`\nServer running ...`) })
 }

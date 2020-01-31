@@ -74,8 +74,9 @@ const validateConfigProps = (authProps, resourcesProps, serverProps) => {
   const serverPropsSchema = {
     $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
-    required: ['server_port', 'server_ip'],
+    required: ['isProduction', 'server_port', 'server_ip'],
     properties: {
+      isProduction: { type: 'boolean' },
       server_port: { type: 'integer' },
       server_ip: { type: 'string' },
     },

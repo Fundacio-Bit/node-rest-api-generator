@@ -2,7 +2,7 @@
 
 let jwt = require('jsonwebtoken')
 const express = require('express')
-const keccak256 = require('js-sha3').keccak256
+// const keccak256 = require('js-sha3').keccak256
 
 const create_router = (authProps, loginSchema) => {
 
@@ -10,7 +10,7 @@ const create_router = (authProps, loginSchema) => {
 
   router.get('/', (req, res) => {
     res.json({
-      hint: 'To log on, send a POST request with a body that follows the indicated schema.',
+      hint: 'To log on, send a POST request with the body following the below schema.',
       schema: loginSchema
     })
   })
@@ -21,13 +21,13 @@ const create_router = (authProps, loginSchema) => {
 
     // Verify User (use getUsers) ...
 
-    // if (authProps.adminuser.username !== req.body.username) {
+    // if (currentUser.username !== req.body.username) {
     //   return res.json({ error: 'UNKNOWN_USER' })
     // }
 
     // Verify password ...
 
-    // if (authProps.adminuser.hashed_pwd !== keccak256(req.body.pwd)) {
+    // if (currentUser.hashed_pwd !== keccak256(req.body.pwd)) {
     //   return res.json({ error: 'INVALID_PASSWORD' })
     // }
 
