@@ -28,6 +28,19 @@ const openMongoCollection = (resource, mongodb_uri, db_name, col_name) => {
   })
 }
 
+const queryMongoCollection = (query, mongo_col) => {
+  return new Promise((resolve, reject) => {
+    mongo_col.find(query).limit(0).toArray((err, items) => {
+      if (!err) {
+        resolve(items)
+      } else {
+        reject(err)
+      }
+    })
+  })
+}
+
 module.exports = {
-  openMongoCollection: openMongoCollection
+  openMongoCollection: openMongoCollection,
+  queryMongoCollection: queryMongoCollection
 }
