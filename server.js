@@ -1,7 +1,8 @@
 // -------------------------------------------------------------------------
 // Pending Tasks:
 // Create mongo indexes ...
-// Middleware to validate resources schemas ...
+// Middleware to validate resources schemas: validate PATCH ...
+// Schema suppliers: field 'website' to format uri
 // Update Readme
 // -------------------------------------------------------------------------
 'use strict'

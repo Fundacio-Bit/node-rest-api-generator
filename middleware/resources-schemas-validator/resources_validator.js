@@ -26,7 +26,14 @@ const validateResources = (req, res, next, resourcesProps) => {
     return res.status(400).json({ error: `Unknown resource: '${resource}'. Available resources: ${resources.join(', ')}` })
   }
 
-  return res.status(200).json({ method: req.method, resource })
+  // Validate req.body
+  // ------------------
+  let validate = resourcesProps.filter(x => x.resource === resource)[0].validate
+  if (!validate(req.body)) {
+    return res.status(400).json({ error: `ERROR: Invalid body format:\n${JSON.stringify(validate.errors, null, 2)}` })
+  } else {
+    return next()
+  }
 
 }
 
