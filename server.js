@@ -23,6 +23,7 @@ const loginSchema = require('./utils/login_schema')
 
 // Middlewares
 const auth = require('./middleware/authentication/auth')
+const validateResources = require('./middleware/resources-schemas-validator/resources_validator.js')
 
 // Routers
 const router_login = require('./routers_endpoints/router_login')
@@ -107,7 +108,7 @@ const createApp = (mongo_cols) => {
   // Resources: middleware to validate JSON schemas first, then instantiate router
   // ------------------------------------------------------------------------------
   mongo_cols.forEach(resource => {
-    // app.use((req, res, next) => { validateResources(req, res, next) })
+    app.use((req, res, next) => { validateResources(req, res, next, resourcesProps) })
     app.use(`/${resource.resource}`, router_resource(resource.collection))
   })
 
