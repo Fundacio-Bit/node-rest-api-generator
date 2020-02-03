@@ -14,7 +14,7 @@ const auth = (req, res, next) => {
 
     jwt.verify(token, authProps.secret_key, (err, decoded) => {
       if (err) {
-        return res.json({ error: 'INVALID_TOKEN' })
+        return res.status(401).json({ error: 'INVALID_TOKEN' })
       }
       else {
         req.tokenPayload = decoded
@@ -23,7 +23,7 @@ const auth = (req, res, next) => {
     })
 
   } else {
-    return res.json({ error: 'TOKEN_REQUIRED' })
+    return res.status(401).json({ error: 'TOKEN_REQUIRED' })
   }
 
 }
