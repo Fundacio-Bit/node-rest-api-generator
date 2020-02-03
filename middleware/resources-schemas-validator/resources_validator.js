@@ -26,8 +26,21 @@ const validateResources = (req, res, next, resourcesProps) => {
     return res.status(400).json({ error: `Unknown resource: '${resource}'. Available resources: ${resources.join(', ')}` })
   }
 
+  // ------------------
   // Validate req.body
   // ------------------
+
+  // PATCH
+  if (req.method === 'PATCH') {
+    let validateForPatch = resourcesProps.filter(x => x.resource === resource)[0].validateForPatch
+    if (!validateForPatch(req.body)) {
+      return res.status(400).json({ error: `ERROR: Invalid body format:\n${JSON.stringify(validateForPatch.errors, null, 2)}` })
+    } else {
+      return next()
+    }
+  }
+
+  // POST, PUT
   let validate = resourcesProps.filter(x => x.resource === resource)[0].validate
   if (!validate(req.body)) {
     return res.status(400).json({ error: `ERROR: Invalid body format:\n${JSON.stringify(validate.errors, null, 2)}` })

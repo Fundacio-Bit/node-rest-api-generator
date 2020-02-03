@@ -40,6 +40,18 @@ const compileResourcesSchemas = (schemasFilesDir, resourcesProps) => {
     } catch(error) {
       throw Error(`Problem detected compiling the schema: ${resource.schema}`)
     }
+
+    // Remove the 'required' field of the schema to validate PATCH requests
+    // ---------------------------------------------------------------------
+    let parsedSchemaForPatch = JSON.parse(content)
+    delete parsedSchemaForPatch.required
+    try {
+      const validateForPatch = ajv.compile(parsedSchemaForPatch)
+      resource.validateForPatch = validateForPatch
+    } catch(error) {
+      throw Error(`Problem detected compiling the schema: ${resource.schema}`)
+    }
+
   })
 }
 

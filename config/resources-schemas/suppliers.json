@@ -22,7 +22,7 @@
       "properties": {
         "email": { "type": "string", "format": "email" },
         "phone_number": { "type": "string" },
-        "website": { "type": "string" }
+        "website": { "type": "string", "format": "uri" }
       },
       "additionalProperties": false
     }
