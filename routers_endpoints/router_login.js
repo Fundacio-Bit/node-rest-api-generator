@@ -2,14 +2,13 @@
 
 let jwt = require('jsonwebtoken')
 const express = require('express')
-const openMongoCollection = require('../utils/mongo_utils').openMongoCollection
 const queryMongoCollection = require('../utils/mongo_utils').queryMongoCollection
 const keccak256 = require('js-sha3').keccak256
 const Ajv = require('ajv')
 
 const ajv = new Ajv({ allErrors: true })
 
-const create_router = (authProps, loginSchema) => {
+const create_router = (authProps, loginSchema, loginCollection) => {
 
   const router = express.Router()
 
@@ -29,13 +28,9 @@ const create_router = (authProps, loginSchema) => {
       return res.status(400).json({ error: `ERROR: Invalid body format:\n${JSON.stringify(validate.errors, null, 2)}` })
     }
 
-    // Open Mongo connection to users datasource and verify user credentials
-    // ----------------------------------------------------------------------
-    let datasource = authProps.users_datasource
-    openMongoCollection('login', datasource.mongodb_uri, datasource.mongodb_database, datasource.mongodb_collection)
-    .then(mongo_col => {
-      return queryMongoCollection({username: req.body.username}, mongo_col.collection)
-    })
+    // Query to mongo collection to verify user credentials
+    // -----------------------------------------------------
+    queryMongoCollection({username: req.body.username}, loginCollection)
     .then(users => {
 
       if (users.length === 0) {

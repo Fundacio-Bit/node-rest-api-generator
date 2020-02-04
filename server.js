@@ -56,12 +56,22 @@ try {
 // -------------------------------
 let promises = resourcesProps.map(resource => openMongoCollection(resource.resource, resource.mongodb_uri, resource.mongodb_database, resource.mongodb_collection))
 
+if (authProps.enable_auth) {
+  let login_col = authProps.users_datasource
+  promises.push(openMongoCollection('login', login_col.mongodb_uri, login_col.mongodb_database, login_col.mongodb_collection))
+}
+
 Promise.all(promises)
 .then(mongo_cols => {
   console.log('\n- MongoDB connections:')
 
   mongo_cols.forEach(col => {
-    let resourceSchema = resourcesProps.filter(x => x.resource === col.resource)[0].schema
+    let resourceSchema
+    if (col.resource === 'login') {
+      resourceSchema = './utils/login_schema.js'
+    } else {
+      resourceSchema = resourcesProps.filter(x => x.resource === col.resource)[0].schema
+    }
     console.log(`  ... opened: '${col.col_name}' (${col.mongodb_uri}/${col.db_name}) (resource: ${col.resource}) (schema: ${resourceSchema})`)
   })
 
@@ -99,7 +109,9 @@ const createApp = (mongo_cols) => {
   // Login: instantiate router first, then middleware auth
   // ------------------------------------------------------
   if (authProps.enable_auth) {
-    app.use('/login', router_login(authProps, loginSchema))
+    let loginCollection = mongo_cols.filter(x => x.resource === 'login')[0].collection
+
+    app.use('/login', router_login(authProps, loginSchema, loginCollection))
     app.use((req, res, next) => { auth(req, res, next) })
     console.log(`\n- Login endpoint to get auth token: ${url_base}/login`)
   }
@@ -107,7 +119,9 @@ const createApp = (mongo_cols) => {
   // ------------------------------------------------------------------------------
   // Resources: middleware to validate JSON schemas first, then instantiate router
   // ------------------------------------------------------------------------------
-  mongo_cols.forEach(resource => {
+  let resource_cols = mongo_cols.filter(x => x.resource !== 'login')
+
+  resource_cols.forEach(resource => {
     app.use((req, res, next) => { validateResources(req, res, next, resourcesProps) })
     app.use(`/${resource.resource}`, router_resource(resource.collection))
   })
