@@ -29,6 +29,7 @@ const validateResources = (req, res, next, resourcesProps) => {
   // ------------------
   // Validate req.body
   // ------------------
+  delete req.body._id
 
   // PATCH
   if (req.method === 'PATCH') {

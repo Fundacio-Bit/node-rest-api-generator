@@ -2,6 +2,7 @@
 // Pending Tasks:
 // Create mongo indexes ...
 // Add to grant permissions in middleware auth
+// poolSize in resource props
 // Update Readme
 // -------------------------------------------------------------------------
 'use strict'
