@@ -2,6 +2,7 @@
 // Pending Tasks:
 // Create mongo indexes
 // Add permissions in middleware auth
+// Add foreign keys
 // -------------------------------------------------------------------------
 'use strict'
 
