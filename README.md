@@ -87,66 +87,66 @@ module.exports = {
 *customers.json*
 ```json
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "required": ["customer_id", "first_name", "last_name", "location_info", "contact_info"],
-    "properties": {
-      "customer_id": { "type": "string" },
-      "first_name": { "type": "string" },
-      "last_name": { "type": "string" },
-      "location_info": {
-        "type": "object",
-        "required": ["address", "postal_code", "city", "country"],
-        "properties": {
-          "address": { "type": "string" },
-          "postal_code": { "type": "string" },
-          "city": { "type": "string" },
-          "country": { "type": "string" }
-        },
-        "additionalProperties": false
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["customer_id", "first_name", "last_name", "location_info", "contact_info"],
+  "properties": {
+    "customer_id": { "type": "string" },
+    "first_name": { "type": "string" },
+    "last_name": { "type": "string" },
+    "location_info": {
+      "type": "object",
+      "required": ["address", "postal_code", "city", "country"],
+      "properties": {
+        "address": { "type": "string" },
+        "postal_code": { "type": "string" },
+        "city": { "type": "string" },
+        "country": { "type": "string" }
       },
-      "contact_info": {
-        "type": "object",
-        "required": ["email", "phone_number"],
-        "properties": {
-          "email": { "type": "string", "format": "email" },
-          "phone_number": { "type": "string" }
-        },
-        "additionalProperties": false
-      }
+      "additionalProperties": false
     },
-    "additionalProperties": false
-  }
+    "contact_info": {
+      "type": "object",
+      "required": ["email", "phone_number"],
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "phone_number": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
 ```
 *orders.json*
 ```json
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "required": ["customer_id", "product_id", "quantity", "delivery_date"],
-    "properties": {
-      "customer_id": { "type": "string" },
-      "product_id": { "type": "string" },
-      "quantity": { "type": "number", "minimum": 0 },
-      "delivery_date": { "type": "string", "format": "date" }
-    },
-    "additionalProperties": false
-  }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["customer_id", "product_id", "quantity", "delivery_date"],
+  "properties": {
+    "customer_id": { "type": "string" },
+    "product_id": { "type": "string" },
+    "quantity": { "type": "number", "minimum": 0 },
+    "delivery_date": { "type": "string", "format": "date" }
+  },
+  "additionalProperties": false
+}
 ```
 *products.json*
 ```json
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "required": ["product_id", "name", "price", "supplier_id"],
-    "properties": {
-      "product_id": { "type": "string" },
-      "name": { "type": "string" },
-      "price": { "type": "number", "minimum": 0 },
-      "supplier_id": { "type": "string" }
-    },
-    "additionalProperties": false
-  }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["product_id", "name", "price", "supplier_id"],
+  "properties": {
+    "product_id": { "type": "string" },
+    "name": { "type": "string" },
+    "price": { "type": "number", "minimum": 0 },
+    "supplier_id": { "type": "string" }
+  },
+  "additionalProperties": false
+}
 ```
 *suppliers.json*
 ```json

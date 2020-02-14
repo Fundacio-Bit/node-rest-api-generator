@@ -1,12 +1,12 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "required": ["customer_id", "product_id", "quantity", "delivery_date"],
-    "properties": {
-      "customer_id": { "type": "string" },
-      "product_id": { "type": "string" },
-      "quantity": { "type": "number", "minimum": 0 },
-      "delivery_date": { "type": "string", "format": "date" }
-    },
-    "additionalProperties": false
-  }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["customer_id", "product_id", "quantity", "delivery_date"],
+  "properties": {
+    "customer_id": { "type": "string" },
+    "product_id": { "type": "string" },
+    "quantity": { "type": "number", "minimum": 0 },
+    "delivery_date": { "type": "string", "format": "date" }
+  },
+  "additionalProperties": false
+}
