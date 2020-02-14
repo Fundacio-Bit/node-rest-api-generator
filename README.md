@@ -54,10 +54,13 @@ module.exports = [
 ~~~javascript
 module.exports = {
 
-  enable_auth: true,  // Enable/Disable auth for the REST API
+  // Enable/Disable auth for the REST API
+  enable_auth: true,
 
-  secret_key: '<your secret key>',  // to sign JWT
+  // to sign JWT
+  secret_key: '<your secret key>',
 
+  // data source for users login
   users_datasource: {
     mongodb_uri: process.env.DEVELOPMENT_LOCAL_ENV ? 'mongodb://127.0.0.1:27017' : 'mongodb://<IP production>:27017',
     mongodb_database: 'mytest_db',
@@ -79,7 +82,7 @@ module.exports = {
 ~~~
 
 ### 4. Store JSON Schemas of resources in the folder *config/resources-schemas/* in JSON format
-~~~json
+```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
@@ -111,7 +114,7 @@ module.exports = {
   },
   "additionalProperties": false
 }
-~~~
+```
 
 ## Usage
 
