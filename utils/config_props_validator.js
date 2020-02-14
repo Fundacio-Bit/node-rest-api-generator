@@ -50,13 +50,14 @@ const validateConfigProps = (authProps, resourcesProps, serverProps) => {
     definitions: {
       resource_item: {
         type: 'object',
-        required: ['resource', 'schema', 'mongodb_uri', 'mongodb_database', 'mongodb_collection'],
+        required: ['resource', 'schema', 'mongodb_uri', 'mongodb_database', 'mongodb_collection', 'mongodb_poolSize'],
         properties: {
           resource: { type: 'string' },
           schema: { type: 'string' },
           mongodb_uri: { type: 'string' },
           mongodb_database: { type: 'string' },
-          mongodb_collection: { type: 'string' }
+          mongodb_collection: { type: 'string' },
+          mongodb_poolSize: { type: 'integer', minimum: 1 }
         },
         additionalProperties: false
       }

@@ -1,9 +1,7 @@
 // -------------------------------------------------------------------------
 // Pending Tasks:
-// Create mongo indexes ...
-// Add to grant permissions in middleware auth
-// poolSize in resource props
-// Update Readme
+// Create mongo indexes
+// Add permissions in middleware auth
 // -------------------------------------------------------------------------
 'use strict'
 
@@ -55,11 +53,13 @@ try {
 // -------------------------------
 // Opening connections to MongoDB
 // -------------------------------
-let promises = resourcesProps.map(resource => openMongoCollection(resource.resource, resource.mongodb_uri, resource.mongodb_database, resource.mongodb_collection))
+let promises = resourcesProps.map(resource =>
+  openMongoCollection(resource.resource, resource.mongodb_uri, resource.mongodb_database, resource.mongodb_collection, resource.mongodb_poolSize)
+)
 
 if (authProps.enable_auth) {
   let login_col = authProps.users_datasource
-  promises.push(openMongoCollection('login', login_col.mongodb_uri, login_col.mongodb_database, login_col.mongodb_collection))
+  promises.push(openMongoCollection('login', login_col.mongodb_uri, login_col.mongodb_database, login_col.mongodb_collection, 5))
 }
 
 Promise.all(promises)

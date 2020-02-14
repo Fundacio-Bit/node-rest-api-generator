@@ -44,7 +44,7 @@ const create_router = (authProps, loginSchema, loginCollection) => {
         // -------------------------------
         const getErrorMsg = (field) => `Entries of the provided users datasource doesn't contain a '${field}' field.`
         if (!currentUser.hashed_pwd) return res.status(500).json({ error: getErrorMsg('hashed_pwd')})
-        if (!currentUser.grants) return res.status(500).json({ error: getErrorMsg('grants')})
+        // if (!currentUser.grants) return res.status(500).json({ error: getErrorMsg('grants')})
 
         // Verify password
         // ----------------
@@ -65,8 +65,8 @@ const create_router = (authProps, loginSchema, loginCollection) => {
 
     const generateToken = (user) => {
       let payload = {
-        username: user.username,
-        grants: user.grants
+        username: user.username
+        // grants: user.grants
       }
 
       let token = jwt.sign(payload, authProps.secret_key, { expiresIn: '24h' })
