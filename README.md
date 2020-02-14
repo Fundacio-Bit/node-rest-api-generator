@@ -2,7 +2,7 @@
 
 A generator of RESTful API's based on JSON schema validation, MongoDB and JWT auth.
 
-If you need a front-end web for the deployed REST API's, please consider the following project:
+Note: If you need a front-end web for the deployed REST API's, please consider the following project:
 [React Hooks FrontEnd Generator](https://github.com/ellado-fbit/react-hooks-frontend-generator)
 
 ## Installation
