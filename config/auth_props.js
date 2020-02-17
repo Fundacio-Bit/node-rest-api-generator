@@ -1,7 +1,7 @@
 module.exports = {
 
   // Enable/Disable auth for the REST API
-  enable_auth: true,
+  enable_auth: false,
 
   // to sign JWT
   secret_key: '<your secret key>',

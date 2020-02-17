@@ -6,7 +6,13 @@
     "product_id": { "type": "string" },
     "name": { "type": "string" },
     "price": { "type": "number", "minimum": 0 },
-    "supplier_id": { "type": "string" }
+    "supplier_id": { "type": "string" },
+    "available_colors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
   },
   "additionalProperties": false
 }
