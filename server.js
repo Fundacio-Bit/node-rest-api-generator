@@ -65,7 +65,7 @@ if (authProps.enable_auth) {
 
 Promise.all(promises)
 .then(mongo_cols => {
-  console.log('\n- MongoDB connections:')
+  console.log('\nOpen MongoDB connections:')
 
   mongo_cols.forEach(col => {
     let resourceSchema
@@ -96,15 +96,17 @@ const createApp = (mongo_cols) => {
 
   const url_base = `http://${serverProps.server_ip}:${serverProps.server_port}`
 
+  console.log('\nInstantiate endpoints (express app):')
+
   // --------------
   // Root endpoint
   // --------------
   if (serverProps.isProduction) {
     app.use('/', router_react_app(__dirname))
-    console.log(`\n- React App: ${url_base}/`)
+    console.log(`\n... Mounting React App: ${url_base}/`)
   } else {
     app.use('/', router_rest_api_doc(url_base, resourcesProps, authProps, loginSchema))
-    console.log(`\n- REST API documentation: ${url_base}/`)
+    console.log(`\n... Mounting REST API documentation endpoint: ${url_base}/`)
   }
 
   // ------------------------------------------------------
@@ -115,7 +117,7 @@ const createApp = (mongo_cols) => {
 
     app.use('/login', router_login(authProps, loginSchema, loginCollection))
     app.use((req, res, next) => { auth(req, res, next) })
-    console.log(`\n- Login endpoint to get auth token: ${url_base}/login`)
+    console.log(`\n... Mounting Login endpoint to get auth token: ${url_base}/login`)
   }
 
   // ------------------------------------------------------------------------------
@@ -124,6 +126,7 @@ const createApp = (mongo_cols) => {
   let resource_cols = mongo_cols.filter(x => x.resource !== 'login')
 
   resource_cols.forEach(resource => {
+    console.log('\n... Mounting endpoints [GET (all), GET, POST, PUT, PATCH, DELETE] for resource path:', `${url_base}/${resource.resource}`)
     app.use((req, res, next) => { validateResources(req, res, next, resourcesProps) })
     app.use(`/${resource.resource}`, router_resource(resource.collection))
   })
@@ -131,5 +134,5 @@ const createApp = (mongo_cols) => {
   // -----------------
   // Launching server
   // -----------------
-  app.listen(serverProps.server_port, () => { console.log(`\nServer running ...`) })
+  app.listen(serverProps.server_port, () => { console.log(`\nServer running on port ${serverProps.server_port} ...`) })
 }
